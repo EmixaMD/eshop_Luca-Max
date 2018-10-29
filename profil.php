@@ -42,7 +42,7 @@
                 <li class="list-group-item">Ville: <?= $info['ville'] ?></li>
             </ul>
             <div class="card-body">
-                <a href="inscription.php?m=modif&id=<?= $info['id_membre']?>" class="card-link btn btn-secondary">Modifier votre<br>profil</a>
+                <a href="inscription.php" class="card-link btn btn-secondary">Modifier votre<br>profil</a>
                 <a data-toggle='modal' <?="data-target='#deleteModal'".$info['id_membre']?> class="card-link btn btn-danger">Supprimer votre <br>profil</a>
             </div>
         </div>
