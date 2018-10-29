@@ -7,21 +7,21 @@
 
     require_once("inc/header.php");
     debug($_SESSION);
-if($_POST && $_SESSION)
-{
-    userModif($_POST);
-}
+    debug($_POST);
+if(userAdmin()){
 
-if($_POST)
+}elseif($_POST && $_SESSION)
+{
+    $valeur =userModif($_POST);
+}elseif($_POST)
 {
     $valeur = userModif($_POST);
     
-}
-if($_SESSION['user'])
+}elseif($_SESSION['user'])
 {
     $valeur = userModif($_SESSION['user']);
     $page = "Modification du profil";
-    debug($valeur);
+    // debug($valeur);
 
 }
 
@@ -31,17 +31,26 @@ if($_SESSION['user'])
     <div class="starter-template">
     <h1><?= $page ?></h1>
         <form action="" method="post">
-            <small class="form-text text-muted">Vos données ne seront revendues à des services tiers.</small>
+            <small class="form-text text-muted">Vos données ne seront revendues qu'à des services tiers.</small>
             <?= $msg ?>
             <div class="form-group">
                 <label for="pseudo">Pseudo</label>
-                <input type="text" class="form-control" id="pseudo" placeholder="Choisissez votre pseudo ..." name="pseudo" required value="<?= $valeur['pseudo'] ?>">
+                <input type="text" class="form-control" id="pseudo" placeholder="Choisissez votre pseudo ..." name="pseudo" required <?php if($_SESSION) {echo "disabled";}?> value="<?= $valeur['pseudo'] ?>">
                 
             </div>
+
             <div class="form-group">
                 <label for="password">Mot de passe</label>
-                <input type="password" class="form-control" id="password" placeholder="Choisissez votre mot de passe ..." name="password" required>
+                <input type="password" class="form-control" id="password" placeholder="Choisissez votre mot de passe ..." name="password" <?php if(!$_SESSION) {echo 'required';}?>>
             </div>
+            <?php 
+                if($_SESSION){
+                    echo ' <div class="form-group">
+                    <label for="passwordNew">Nouveau mot de passe</label>
+                    <input type="password" class="form-control" id="passwordNew" placeholder="Choisissez votre nouveau mot de passe ..." name="passwordNew" required>
+                </div>';
+                }
+            ?>
             <div class="form-group">
                 <label for="prenom">Prénom</label>
                 <input type="text" class="form-control" id="prenom" placeholder="Quel est votre prénom ..." name="prenom" value="<?= $valeur['prenom'] ?>">

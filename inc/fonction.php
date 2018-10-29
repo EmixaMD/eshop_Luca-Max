@@ -139,6 +139,7 @@ function prixTotal()
 function userModif($var)
 {
     global $msg;
+    global $pdo;
     // debug($var, 2);
 
     # Je vérifie le pseudo
@@ -209,36 +210,29 @@ function userModif($var)
     }
 
     // PLACER LES AUTRES VERIFICATIONS ICI
-    if ($var == $_POST && !empty($_SESSION)){
-
-        $result = $pdo->prepare("SELECT pseudo FROM membre WHERE pseudo = :pseudo");
-        $result->bindValue(':pseudo', $var['pseudo'], PDO::PARAM_STR);
-        $result->execute();
-
-        if($result->rowCount() == 1)
-        {
-            $msg .= "<div class='alert alert-danger'>Le pseudo $var[pseudo] est déjà pris, veuillez en choisir un autre.</div>";
-        } else {
-            if (!empty($var['mdp']))
+    if ($var == $_POST && !empty($_SESSION))
+    {
+        if (!empty($var['mdp']))
+        {   
+            $passCheck = $pdo->prepare("SELECT mdp FROM membre WHERE id_membre = :id_membre");
+            $passCheck->bindValue(":id_membre", $_SESSION['id_membre'],PDO::PARAM_INT);
+            $passCheck->execute();
+            $user = $passCheck->fetch();
+            if(password_verify($_POST['password'],$user['mdp']))
             {
-                if(password_verify($_POST['password'],$user['mdp']))
-                {
-                    $mdpResult = $pdo->prepare("UPDATE membre SET mdp =:mdp WHERE id_membre = :id_membre");
-                    $password_hash = password_hash($var['password'], PASSWORD_BCRYPT);
-                    $mdpResult->bindValue(":mdp", $password_hash, PDO::PARAM_STR);
-                    $mdpResult->execute;
-                } else 
-                {
-                    $msg .= "<div class='alert alert-danger'>Erreur d'authentification</div>";
-                    die();
-                }
-                
+                // $mdpResult = $pdo->prepare("UPDATE membre SET mdp =:mdp WHERE id_membre = :id_membre");
+                // $password_hash = password_hash($var['passwordNew'], PASSWORD_BCRYPT);
+                // $mdpResult->bindValue(":mdp", $password_hash, PDO::PARAM_STR);
+                // $mdpResult->execute;
+                echo "coucou";
+            } else 
+            {
+                $msg .= "<div class='alert alert-danger'>Erreur d'authentification</div>";
+                die();
             }
-            $result = $pdo->prepare("UPDATE membre SET pseudo = :pseudo, nom=:nom, prenom=:prenom, email=:email, civilite=:civilite, ville=:ville, code_postal=:code_postal, adresse=adresse, statut=:statut) WHERE id_membre = :id_membre");
-
-
-
         }
+        $result = $pdo->prepare("UPDATE membre SET nom=:nom, prenom=:prenom, email=:email, civilite=:civilite, ville=:ville, code_postal=:code_postal, adresse=adresse, statut=:statut) WHERE id_membre = :id_membre");
+
 
     }
     elseif($var == $_POST)
@@ -306,6 +300,5 @@ function userModif($var)
         "civilite" => "$civilite"
     );
 
-    debug($valeur);
     return $valeur;
 }
