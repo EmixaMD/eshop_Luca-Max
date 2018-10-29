@@ -76,31 +76,9 @@ function deleteModal($id, $titre, $reference)
     echo '</div>';
 }
 
-function deleteModalUser($id, $pseudo , $nom)
-{
-    echo "<div class='modal fade' id='deleteModalUser" . $id . "' tabindex='-1' role='dialog' aria-labelledby='exampleModalLabel' aria-hidden='true'>";
-        echo '<div class="modal-dialog" role="document">';
-            echo '<div class="modal-content">';
-                echo '<div class="modal-header">';
-                echo "<h5 class='modal-title' id='exampleModalLabel'>Suppression</h5>";
-                echo '<button type="button" class="close" data-dismiss="modal" aria-label="Close">';
-                echo '<span aria-hidden="true">&times;</span>';
-                echo '</button>';
-                echo '</div>';
-                echo '<div class="modal-body">';
-                echo "Êtes-vous sûr de vouloir supprimer le User " . $pseudo . " (nom: " . $nom . " ) ?";
-                echo '</div>';
-                echo '<div class="modal-footer">';
-                echo '<button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>';
-                echo '<a href="?a=delete&idUser=' . $id . '" class="btn btn-danger">Supprimer</a>';
-                echo '</div>';
-            echo '</div>';
-        echo '</div>';
-    echo '</div>';
-}
 
 # Création d'une fonction pour créer et ajouter au panier
-function ajoutPanier($id, $quantite, $photo, $titre, $prix)
+function ajoutPanier($id, $quantite, $photo, $titre, $prix, $stock)
 {
     if(!isset($quantite))
     {
@@ -118,6 +96,7 @@ function ajoutPanier($id, $quantite, $photo, $titre, $prix)
         $_SESSION['panier'][$id]['photo'] = $photo;
         $_SESSION['panier'][$id]['titre'] = $titre;
         $_SESSION['panier'][$id]['prix'] = $prix;
+        $_SESSION['panier'][$id]['stock'] = $stock;
     }
     else # Le produit est déjà en panier, j'ajoute la quantité à celle existante
     {
@@ -150,7 +129,7 @@ function prixTotal()
     {
         foreach ($_SESSION['panier'] as $produit) 
         {
-            $total += $produit['prix'] * $produit['quantite'];
+            $total += $produit['prix'] * $produit['quantite']*1.2;
         }
     }
     

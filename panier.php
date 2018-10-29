@@ -9,6 +9,9 @@
     // debug($_POST);
 
     // traitement pour retirer produit du panier
+    
+    
+
     if(isset($_GET['a']) && $_GET['a'] == 'delete') {
         if(isset($_GET['id']) && !empty($_GET['id']) && is_numeric($_GET['id'])) {
             $produit_a_retirer = $_GET['id'];
@@ -30,8 +33,15 @@
         header('location:panier.php');
     }
     
-    if($_POST)
+    if(isset($_POST))
     {
+        
+        if(isset($_POST['val'])){
+        debug($_POST);
+        $_SESSION['panier'][$_POST["id_produit"]]['quantite'] = $_POST['qua'];
+
+
+        }
 
         if(isset($_POST["ajoutPanier"]))
         {
@@ -41,13 +51,18 @@
     
             $produit = $result->fetch();
     
-            // debug($produit);
+             debug($produit);
     
             # Appel à ma fonction pour créer mon panier
-            ajoutPanier($produit['id_produit'], $_POST['quantite'], $produit['photo'], $produit['titre'], $produit['prix']);
+            ajoutPanier($produit['id_produit'], $_POST['quantite'], $produit['photo'], $produit['titre'], $produit['prix'],$produit['stock']);
     
             $msg .= "<div class='alert alert-success'>Le produit a bien été ajouté au panier !</div>";
         }
+        if(isset($_POST["valider"])){
+
+            if($_SESSION['user']['adresse'] == '' ||$_SESSION['user']['ville'] == '' ||$_SESSION['user']['code_postal'] == '' ){
+                $msg .= '<div class="alert alert-danger">Veuillez renseigné une ville  un code postal et un adresse de livraison</div>'; 
+            }
 
         foreach($_SESSION['panier'] as $indice => $valeur) 
         {
@@ -96,8 +111,9 @@
             unset($_SESSION['panier']); //suppression du panier dans la session utilisateur
         }
     }
+    }
 
-    // debug($_SESSION);
+     debug($_SESSION,25);
 
 ?>
 
@@ -118,6 +134,7 @@
                     <th scope="col">Prix Unitaire</th>
                     <th scope="col">Quantité</th>
                     <th scope="col">Prix Total</th>
+                    <th scope="col">Prix TTC</th>
                     <th scope="col">Supprimer</th>
                 </tr>
             </thead>
@@ -131,9 +148,20 @@
 
                         <td><?= $value['prix'] ?> €</td>
 
-                        <td><?= $value['quantite'] ?></td>
+                        <td><form action="" method="post">
+                            <input type="hidden" name="id_produit" value="<?=$key?>">
+                                <select class="form-control" name="qua">
+                                    <option selected disabled>Quantité ...</option>
+                                    <?php for($i=1; $i <= $value['stock']; $i++) : ?>
+                                        <option <?php if ($value['quantite'] == $i) {echo "selected";} ?>><?=$i?></option>
+                                    <?php endfor; ?>
+                                </select>
+                                <button type="submit" class="btn btn-primary" value="" name='val'>Valider la quantité</button>
+                            </form></td>
 
                         <td><?= $value['quantite']*$value['prix'] ?> €</td>
+
+                        <td><?= $value['quantite']*$value['prix']*1.2 ?> €</td>
                         
                         <td><a href="?a=delete&id=<?=$key?>"><i class='fas fa-trash-alt'></i></a></td>
                     </tr>
@@ -149,7 +177,7 @@
         </table>
         <?php if(userConnect()) : ?>
             <form action="" method="post">
-                <input type="submit" class="btn btn-primary" value="Valider le panier" name=valider>
+                <button type="submit" class="btn btn-primary" value="" name='valider'>Valider le panier</button>
             </form>
         <?php else : ?>
             <p>Vous n'êtes pas connecté.</p>

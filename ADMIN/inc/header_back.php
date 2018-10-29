@@ -71,6 +71,12 @@
                 </a>
               </li>
               <li class="nav-item">
+                <a class="nav-link active" href="list_commande.php">
+                  <span data-feather="home"></span>
+                  Liste des commandes <span class="sr-only">(current)</span>
+                </a>
+              </li>
+              <li class="nav-item">
                 <a class="nav-link" href="formulaire_produit.php">
                   <span data-feather="file"></span>
                   Ajouter un produit

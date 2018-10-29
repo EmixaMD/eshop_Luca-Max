@@ -91,11 +91,9 @@ if(isset($_GET['a']) && isset($_GET['id']) && $_GET['a'] == "delete" && is_numer
                  $contenu .= "<td>" . $value . "</td>";  
              }
              
-            
-             
          }
  
-         $contenu .= "<td><a href='formulaire_user.php?id=" . $user['id_membre'] . "'><i class='fas fa-pen'></i></a></td>";
+         $contenu .= "<td><a href='../inscription.php?id=" . $user['id_membre'] . "'><i class='fas fa-pen'></i></a></td>";
  
          $contenu .= "<td><a data-toggle='modal' data-target='#deleteModal" . $user['id_membre'] . "'><i class='fas fa-trash-alt'></i></a></td>";
  
