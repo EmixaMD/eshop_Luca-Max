@@ -65,11 +65,34 @@ function deleteModal($id, $titre, $reference)
                 echo '</button>';
                 echo '</div>';
                 echo '<div class="modal-body">';
-                echo "Êtes-vous sûr de vouloir supprimer le produit " . $titre . " (référence: " . $reference . " ) ?";
+                echo "Êtes-vous sûr de vouloir supprimer" . $titre . " (référence: " . $reference . " ) ?";
                 echo '</div>';
                 echo '<div class="modal-footer">';
                 echo '<button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>';
                 echo '<a href="?a=delete&id=' . $id . '" class="btn btn-danger">Supprimer</a>';
+                echo '</div>';
+            echo '</div>';
+        echo '</div>';
+    echo '</div>';
+}
+
+function deleteModalUser($id, $pseudo , $nom)
+{
+    echo "<div class='modal fade' id='deleteModalUser" . $id . "' tabindex='-1' role='dialog' aria-labelledby='exampleModalLabel' aria-hidden='true'>";
+        echo '<div class="modal-dialog" role="document">';
+            echo '<div class="modal-content">';
+                echo '<div class="modal-header">';
+                echo "<h5 class='modal-title' id='exampleModalLabel'>Suppression</h5>";
+                echo '<button type="button" class="close" data-dismiss="modal" aria-label="Close">';
+                echo '<span aria-hidden="true">&times;</span>';
+                echo '</button>';
+                echo '</div>';
+                echo '<div class="modal-body">';
+                echo "Êtes-vous sûr de vouloir supprimer le User " . $pseudo . " (nom: " . $nom . " ) ?";
+                echo '</div>';
+                echo '<div class="modal-footer">';
+                echo '<button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>';
+                echo '<a href="?a=delete&idUser=' . $id . '" class="btn btn-danger">Supprimer</a>';
                 echo '</div>';
             echo '</div>';
         echo '</div>';

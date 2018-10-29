@@ -5,6 +5,7 @@
 
     require_once("inc/header_back.php");
 
+
     if(isset($_GET['a']) && isset($_GET['id']) && $_GET['a'] == "delete" && is_numeric($_GET['id'])) # la fonction is_numeric() me permet de vérifier que le paramètre rentré est bien un chiffre
     {
         $req = "SELECT * FROM produit WHERE id_produit = :id";
