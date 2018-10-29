@@ -8,11 +8,13 @@
     require_once("inc/header.php");
     debug($_SESSION);
     debug($_POST);
+
+    //conditions en chaines donc if elseif il s'arrete a la premiere condition verifiée
 if(userAdmin()){
 
 }elseif($_POST && $_SESSION)
 {
-    $valeur =userModif($_POST);
+    $valeur = userModif($_POST);
 }elseif($_POST)
 {
     $valeur = userModif($_POST);
@@ -47,7 +49,7 @@ if(userAdmin()){
                 if($_SESSION){
                     echo ' <div class="form-group">
                     <label for="passwordNew">Nouveau mot de passe</label>
-                    <input type="password" class="form-control" id="passwordNew" placeholder="Choisissez votre nouveau mot de passe ..." name="passwordNew" required>
+                    <input type="password" class="form-control" id="passwordNew" placeholder="Choisissez votre nouveau mot de passe ..." name="passwordNew">
                 </div>';
                 }
             ?>
