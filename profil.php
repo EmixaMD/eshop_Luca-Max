@@ -18,7 +18,7 @@
         $info[$key] = htmlspecialchars($value); # nous vérifions que les informations à afficher ne comporte pas d'injections et ne perturberont pas notre service
     }
 
-    // debug($info);
+   //debug($info);
 
 ?>
 
@@ -28,7 +28,7 @@
             <img class="card-img-top img-thumbnail rounded mx-auto d-block" src="<?=URL?>/assets/uploads/user/default.png" alt="Card image cap" style="width:25%;">
             <div class="card-body">
                 <h5 class="card-title">Bonjour <?= $info['pseudo'] ?></h5>
-                <p class="card-text">Nous sommes râvi de vous revoir sur notre plateforme.</p>
+                <p class="card-text">Nous sommes ravis de vous revoir sur notre plateforme.</p>
             </div>
             <ul class="list-group list-group-flush">
                 <li class="list-group-item">Prénom: <?= $info['prenom'] ?></li>
@@ -42,8 +42,8 @@
                 <li class="list-group-item">Ville: <?= $info['ville'] ?></li>
             </ul>
             <div class="card-body">
-                <a href="#" class="card-link">Action 1</a>
-                <a href="#" class="card-link">Action 3</a>
+                <a href="inscription.php?m=modif&id=<?= $info['id_membre']?>" class="card-link btn btn-secondary">Modifier votre<br>profil</a>
+                <a data-toggle='modal' <?="data-target='#deleteModal'".$info['id_membre']?> class="card-link btn btn-danger">Supprimer votre <br>profil</a>
             </div>
         </div>
     </div>
