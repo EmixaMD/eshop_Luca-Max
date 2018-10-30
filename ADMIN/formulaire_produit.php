@@ -17,6 +17,7 @@
             # Nous allons donner un nom aléatoire à notre photo
             $nom_photo = $_POST['titre'] . '_' . $_POST['reference'] . '_' . time() . '-' . rand(1,999) . $_FILES['photo']['name'];
             $nom_photo = str_replace(' ', '-', $nom_photo);
+            $nom_photo = str_replace('\'', '-', $nom_photo);
             $nom_photo = str_replace(array('é','è','à','ç','ù'), 'x', $nom_photo);
 
             // Enregistrons le chemin de notre fichier
@@ -49,6 +50,8 @@
         {
             $nom_photo = "default.jpg";
         }
+
+
 
         // AUTRES VERIFICATIONS POSSIBLES
 
