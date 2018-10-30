@@ -11,6 +11,7 @@
 
     //conditions en chaines donc if elseif il s'arrete a la premiere condition verifiée
 if(userAdmin()){
+    $valeur =userModif($_SESSION['target']['id']);
 
 }elseif($_POST && $_SESSION)
 {

@@ -213,26 +213,27 @@ function userModif($var)
     //Si on est dans une session et qu'on a utilisé le post :
     if ($var == $_POST && !empty($_SESSION))
     {   
-        // if (!empty($var['mdp']))
-        // {   
-        //     $passCheck = $pdo->prepare("SELECT mdp FROM membre WHERE id_membre = :id_membre");
-        //     $passCheck->bindValue(":id_membre", $_SESSION['id_membre'],PDO::PARAM_INT);
-        //     $passCheck->execute();
-        //     $user = $passCheck->fetch();
-        //     if(password_verify($_POST['password'],$user['mdp']))
-        //     {
-        //         // $mdpResult = $pdo->prepare("UPDATE membre SET mdp =:mdp WHERE id_membre = :id_membre");
-        //         // $password_hash = password_hash($var['passwordNew'], PASSWORD_BCRYPT);
-        //         // $mdpResult->bindValue(":mdp", $password_hash, PDO::PARAM_STR);
-        //         // $mdpResult->execute;
-        //         echo "coucou";
-        //     } else 
-        //     {
-        //         $msg .= "<div class='alert alert-danger'>Erreur d'authentification</div>";
-        //         die();
-        //     }
-        // }
-        $result = $pdo->prepare("UPDATE membre SET nom=:nom, prenom=:prenom, email=:email, civilite=:civilite, ville=:ville, code_postal=:code_postal, adresse=:adresse) WHERE id_membre = :id_membre");
+        if (!empty($var['mdp']))
+        {   
+            $passCheck = $pdo->prepare("SELECT mdp FROM membre WHERE id_membre = :id_membre");
+            $passCheck->bindValue(":id_membre", $_SESSION['id_membre'],PDO::PARAM_INT);
+            $passCheck->execute();
+            $user = $passCheck->fetch();
+
+            if(password_verify($_POST['password'],$user['mdp']))
+            {
+                $mdpResult = $pdo->prepare("UPDATE membre SET mdp =:mdp WHERE id_membre = :id_membre");
+                $password_hash = password_hash($var['passwordNew'], PASSWORD_BCRYPT);
+                $mdpResult->bindValue(":mdp", $password_hash, PDO::PARAM_STR);
+                $mdpResult->execute;
+                
+            } else 
+            {
+                $msg .= "<div class='alert alert-danger'>Erreur d'authentification</div>";
+                die();
+            }
+        }
+        $result = $pdo->prepare("UPDATE membre SET nom=:nom, prenom=:prenom, email=:email, civilite=:civilite, ville=:ville, code_postal=:code_postal, adresse=:adresse WHERE id_membre = :id_membre");
 
         $result->bindValue(':nom', $var['nom'], PDO::PARAM_STR);
         $result->bindValue(':prenom', $var['prenom'], PDO::PARAM_STR);
@@ -246,9 +247,16 @@ function userModif($var)
 
         if($result->execute()){
 
-            //header("location:profil.php"); // Et on se tire de là
-            echo "coucou2";
-        }
+            if(!userAdmin())
+            {
+                foreach ($var as $key => $value) {
+                    $_SESSION['user'][$key] = $value;
+                }
+                header("location:profil.php"); // Et on se tire de là
+            } else {
+                header("loocation:ADMIN/index.php");
+            }
+        } 
 
 
     }
