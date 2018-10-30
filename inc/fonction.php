@@ -53,7 +53,7 @@ function userAdmin()
 }
 
 # Création d'une modal de suppression
-function deleteModal($id, $titre, $reference)
+function deleteModal($id, $titre, $contexte)
 {
     echo "<div class='modal fade' id='deleteModal" . $id . "' tabindex='-1' role='dialog' aria-labelledby='exampleModalLabel' aria-hidden='true'>";
         echo '<div class="modal-dialog" role="document">';
@@ -65,7 +65,7 @@ function deleteModal($id, $titre, $reference)
                 echo '</button>';
                 echo '</div>';
                 echo '<div class="modal-body">';
-                echo "Êtes-vous sûr de vouloir supprimer le produit " . $titre . " (référence: " . $reference . " ) ?";
+                echo "Êtes-vous sûr de vouloir supprimer " . $contexte . " " . $titre . " ?";
                 echo '</div>';
                 echo '<div class="modal-footer">';
                 echo '<button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>';
@@ -139,6 +139,7 @@ function prixTotal()
 function userModif($var)
 {
     global $msg;
+    global $pdo;
     // debug($var, 2);
 
     # Je vérifie le pseudo
@@ -171,7 +172,7 @@ function userModif($var)
     }
     else 
     {
-        $msg .= "<div class='alert alert-danger'>Veuillez rentrer un mot de passe.</div>";
+        //$msg .= "<div class='alert alert-danger'>Veuillez rentrer un mot de passe.</div>";
     }
 
     # Je vérifie l'email
@@ -209,36 +210,54 @@ function userModif($var)
     }
 
     // PLACER LES AUTRES VERIFICATIONS ICI
-    if ($var == $_POST && !empty($_SESSION)){
+    //Si on est dans une session et qu'on a utilisé le post :
+    if ($var == $_POST && !empty($_SESSION))
+    {   
+        if (!empty($var['password']))
+        {   
+            $passCheck = $pdo->prepare("SELECT * FROM membre WHERE id_membre = :id");
+            $passCheck->bindValue(":id", $_SESSION['user']['id_membre'],PDO::PARAM_INT);
+            $passCheck->execute();
+            $user = $passCheck->fetch();
 
-        $result = $pdo->prepare("SELECT pseudo FROM membre WHERE pseudo = :pseudo");
-        $result->bindValue(':pseudo', $var['pseudo'], PDO::PARAM_STR);
-        $result->execute();
-
-        if($result->rowCount() == 1)
-        {
-            $msg .= "<div class='alert alert-danger'>Le pseudo $var[pseudo] est déjà pris, veuillez en choisir un autre.</div>";
-        } else {
-            if (!empty($var['mdp']))
+            if(password_verify($_POST['password'],$user['mdp']))
             {
-                if(password_verify($_POST['password'],$user['mdp']))
-                {
-                    $mdpResult = $pdo->prepare("UPDATE membre SET mdp =:mdp WHERE id_membre = :id_membre");
-                    $password_hash = password_hash($var['password'], PASSWORD_BCRYPT);
-                    $mdpResult->bindValue(":mdp", $password_hash, PDO::PARAM_STR);
-                    $mdpResult->execute;
-                } else 
-                {
-                    $msg .= "<div class='alert alert-danger'>Erreur d'authentification</div>";
-                    die();
-                }
+                $mdpResult = $pdo->prepare("UPDATE membre SET mdp =:mdp WHERE id_membre = :id_membre");
+                $password_hash = password_hash($var['passwordNew'], PASSWORD_BCRYPT);
+                $mdpResult->bindValue(":mdp", $password_hash, PDO::PARAM_STR);
+                $mdpResult->execute;
                 
+            } else 
+            {
+                $msg .= "<div class='alert alert-danger'>Erreur d'authentification</div>";
+                die();
             }
-            $result = $pdo->prepare("UPDATE membre SET pseudo = :pseudo, nom=:nom, prenom=:prenom, email=:email, civilite=:civilite, ville=:ville, code_postal=:code_postal, adresse=adresse, statut=:statut) WHERE id_membre = :id_membre");
-
-
-
         }
+        $result = $pdo->prepare("UPDATE membre SET nom=:nom, prenom=:prenom, email=:email, civilite=:civilite, ville=:ville, code_postal=:code_postal, adresse=:adresse WHERE id_membre = :id_membre");
+
+        $result->bindValue(':nom', $var['nom'], PDO::PARAM_STR);
+        $result->bindValue(':prenom', $var['prenom'], PDO::PARAM_STR);
+        $result->bindValue(':email', $var['email'], PDO::PARAM_STR);
+        $result->bindValue(':civilite', $var['civilite'], PDO::PARAM_STR);
+        $result->bindValue(':ville', $var['ville'], PDO::PARAM_STR);
+        $result->bindValue(':adresse', $var['adresse'], PDO::PARAM_STR);
+        $result->bindValue(':code_postal', $var['code_postal'], PDO::PARAM_INT);
+  
+        $result->bindValue(':id_membre', $_SESSION['user']['id_membre'], PDO::PARAM_INT);
+
+        if($result->execute()){
+
+            if(!userAdmin())
+            {
+                foreach ($var as $key => $value) {
+                    $_SESSION['user'][$key] = $value;
+                }
+                header("location:profil.php"); // Et on se tire de là
+            } else {
+                header("location:ADMIN/index.php");
+            }
+        } 
+
 
     }
     elseif($var == $_POST)
@@ -294,7 +313,7 @@ function userModif($var)
     $code_postal = (isset($var['code_postal'])) ? $var['code_postal'] : '';
     $ville = (isset($var['ville'])) ? $var['ville'] : '';
     $civilite = (isset($var['civilite'])) ? $var['civilite'] : '';
-
+    // Je stocke tout dans un array que je retourne
     $valeur = array(
         "pseudo" => "$pseudo",
         "prenom" => "$prenom",
@@ -306,6 +325,52 @@ function userModif($var)
         "civilite" => "$civilite"
     );
 
-    debug($valeur);
     return $valeur;
 }
+
+//fonction photo
+
+function photoVerif($post, $files)
+{
+    if(!empty($files['photo']['name']))
+    {
+
+        # Nous allons donner un nom aléatoire à notre photo
+        $nom_photo = $post['prenom'] . '_' . $post['ville'] . '_' . time() . '-' . rand(1,999) . $files['photo']['name'];
+        $nom_photo = str_replace(' ', '-', $nom_photo);
+        $nom_photo = str_replace('\'', '-', $nom_photo);
+        $nom_photo = str_replace(array('é','è','à','ç','ù'), 'x', $nom_photo);
+
+        // Enregistrons le chemin de notre fichier
+
+        $taille_max = 2*1048576; # On définit ici la taille maximale autorisée (2Mo)
+
+        if($files['photo']["size"] > $taille_max || empty($files['photo']["size"]))
+        {
+            $msg .= "<div class='alert alert-danger'>Veuillez sélectionner un fichier de 2Mo maximum.</div>";
+        }
+
+        $type_photo = [
+            'image/jpeg',
+            'image/png',
+            'image/gif'
+        ];
+
+        if (!in_array($files['photo']["type"], $type_photo) || empty($files['photo']["type"])) 
+        {
+            $msg .= "<div class='alert alert-danger'>Veuillez sélectionner un fichier JPEG/JPG, PNG ou GIF.</div>";
+        }
+
+    }
+    elseif(isset($post['photo_actuelle']))
+    {
+        $nom_photo = $post['photo_actuelle'];
+    }
+    else 
+    {
+        $nom_photo = "default.png";
+    }
+    return $nom_photo;
+}
+
+

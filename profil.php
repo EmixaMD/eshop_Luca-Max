@@ -12,20 +12,25 @@
         exit(); // die() fonctionne aussi
     }
 
-    // debug($_SESSION, 2);
+    
     foreach($_SESSION['user'] as $key => $value)
     {
         $info[$key] = htmlspecialchars($value); # nous vérifions que les informations à afficher ne comporte pas d'injections et ne perturberont pas notre service
     }
-
-   //debug($info);
+    
+    $chemin_photo = URL."assets/uploads/user/".$_SESSION['user']['photo'];
+    $result= $pdo->prepare("SELECT * FROM membre WHERE id_membre= :id");
+    $result->bindValue(':id', $_SESSION['user']['id_membre'], PDO::PARAM_INT);
+    $result->execute();
+    $info2=$result->fetch();
+    deleteModal($info2['id_membre'],$info2['pseudo'],"votre profil");
 
 ?>
 
     <div class="starter-template">
         <h1><?= $page ?></h1>
         <div class="card">
-            <img class="card-img-top img-thumbnail rounded mx-auto d-block" src="<?=URL?>/assets/uploads/user/default.png" alt="Card image cap" style="width:25%;">
+            <img class="card-img-top img-thumbnail rounded mx-auto d-block" src="<?=$chemin_photo?>" alt="Card image" style="width:25%;">
             <div class="card-body">
                 <h5 class="card-title">Bonjour <?= $info['pseudo'] ?></h5>
                 <p class="card-text">Nous sommes ravis de vous revoir sur notre plateforme.</p>
@@ -42,10 +47,11 @@
                 <li class="list-group-item">Ville: <?= $info['ville'] ?></li>
             </ul>
             <div class="card-body">
-                <a href="inscription.php?m=modif&id=<?= $info['id_membre']?>" class="card-link btn btn-secondary">Modifier votre<br>profil</a>
-                <a data-toggle='modal' <?="data-target='#deleteModal'".$info['id_membre']?> class="card-link btn btn-danger">Supprimer votre <br>profil</a>
+                <a href="inscription.php" class="card-link btn btn-secondary">Modifier votre<br>profil</a>
+                <a data-toggle='modal' data-target='#deleteModal<?=$info['id_membre']?>' class='card-link btn btn-danger'>Supprimer votre <br>profil</a>
             </div>
         </div>
     </div>
 
-<?php require_once("inc/footer.php"); ?>
+<?php require_once("inc/footer.php");
+?>
