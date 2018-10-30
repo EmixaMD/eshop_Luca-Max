@@ -53,7 +53,7 @@ function userAdmin()
 }
 
 # Création d'une modal de suppression
-function deleteModal($id, $titre, $reference)
+function deleteModal($id, $titre, $contexte)
 {
     echo "<div class='modal fade' id='deleteModal" . $id . "' tabindex='-1' role='dialog' aria-labelledby='exampleModalLabel' aria-hidden='true'>";
         echo '<div class="modal-dialog" role="document">';
@@ -65,7 +65,7 @@ function deleteModal($id, $titre, $reference)
                 echo '</button>';
                 echo '</div>';
                 echo '<div class="modal-body">';
-                echo "Êtes-vous sûr de vouloir supprimer le produit " . $titre . " (référence: " . $reference . " ) ?";
+                echo "Êtes-vous sûr de vouloir supprimer " . $contexte . " " . $titre . " ?";
                 echo '</div>';
                 echo '<div class="modal-footer">';
                 echo '<button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>';
@@ -172,7 +172,7 @@ function userModif($var)
     }
     else 
     {
-        $msg .= "<div class='alert alert-danger'>Veuillez rentrer un mot de passe.</div>";
+        //$msg .= "<div class='alert alert-danger'>Veuillez rentrer un mot de passe.</div>";
     }
 
     # Je vérifie l'email
@@ -213,10 +213,10 @@ function userModif($var)
     //Si on est dans une session et qu'on a utilisé le post :
     if ($var == $_POST && !empty($_SESSION))
     {   
-        if (!empty($var['mdp']))
+        if (!empty($var['password']))
         {   
-            $passCheck = $pdo->prepare("SELECT mdp FROM membre WHERE id_membre = :id_membre");
-            $passCheck->bindValue(":id_membre", $_SESSION['id_membre'],PDO::PARAM_INT);
+            $passCheck = $pdo->prepare("SELECT * FROM membre WHERE id_membre = :id");
+            $passCheck->bindValue(":id", $_SESSION['user']['id_membre'],PDO::PARAM_INT);
             $passCheck->execute();
             $user = $passCheck->fetch();
 
@@ -254,7 +254,7 @@ function userModif($var)
                 }
                 header("location:profil.php"); // Et on se tire de là
             } else {
-                header("loocation:ADMIN/index.php");
+                header("location:ADMIN/index.php");
             }
         } 
 
@@ -327,3 +327,50 @@ function userModif($var)
 
     return $valeur;
 }
+
+//fonction photo
+
+function photoVerif($post, $files)
+{
+    if(!empty($files['photo']['name']))
+    {
+
+        # Nous allons donner un nom aléatoire à notre photo
+        $nom_photo = $post['prenom'] . '_' . $post['ville'] . '_' . time() . '-' . rand(1,999) . $files['photo']['name'];
+        $nom_photo = str_replace(' ', '-', $nom_photo);
+        $nom_photo = str_replace('\'', '-', $nom_photo);
+        $nom_photo = str_replace(array('é','è','à','ç','ù'), 'x', $nom_photo);
+
+        // Enregistrons le chemin de notre fichier
+
+        $taille_max = 2*1048576; # On définit ici la taille maximale autorisée (2Mo)
+
+        if($files['photo']["size"] > $taille_max || empty($files['photo']["size"]))
+        {
+            $msg .= "<div class='alert alert-danger'>Veuillez sélectionner un fichier de 2Mo maximum.</div>";
+        }
+
+        $type_photo = [
+            'image/jpeg',
+            'image/png',
+            'image/gif'
+        ];
+
+        if (!in_array($files['photo']["type"], $type_photo) || empty($files['photo']["type"])) 
+        {
+            $msg .= "<div class='alert alert-danger'>Veuillez sélectionner un fichier JPEG/JPG, PNG ou GIF.</div>";
+        }
+
+    }
+    elseif(isset($post['photo_actuelle']))
+    {
+        $nom_photo = $post['photo_actuelle'];
+    }
+    else 
+    {
+        $nom_photo = "default.png";
+    }
+    return $nom_photo;
+}
+
+
