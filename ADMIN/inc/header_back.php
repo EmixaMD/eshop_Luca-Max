@@ -71,6 +71,12 @@
                 </a>
               </li>
               <li class="nav-item">
+                <a class="nav-link active" href="list_commande.php">
+                  <span data-feather="home"></span>
+                  Liste des commandes <span class="sr-only">(current)</span>
+                </a>
+              </li>
+              <li class="nav-item">
                 <a class="nav-link" href="formulaire_produit.php">
                   <span data-feather="file"></span>
                   Ajouter un produit
@@ -86,7 +92,7 @@
             </h6>
             <ul class="nav flex-column mb-2">
               <li class="nav-item">
-                <a class="nav-link" href="#">
+                <a class="nav-link" href="list_user.php">
                   <span data-feather="file-text"></span>
                   Liste des utilisateurs
                 </a>

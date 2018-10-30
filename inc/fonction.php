@@ -76,8 +76,9 @@ function deleteModal($id, $titre, $contexte)
     echo '</div>';
 }
 
+
 # Création d'une fonction pour créer et ajouter au panier
-function ajoutPanier($id, $quantite, $photo, $titre, $prix)
+function ajoutPanier($id, $quantite, $photo, $titre, $prix, $stock)
 {
     if(!isset($quantite))
     {
@@ -95,6 +96,7 @@ function ajoutPanier($id, $quantite, $photo, $titre, $prix)
         $_SESSION['panier'][$id]['photo'] = $photo;
         $_SESSION['panier'][$id]['titre'] = $titre;
         $_SESSION['panier'][$id]['prix'] = $prix;
+        $_SESSION['panier'][$id]['stock'] = $stock;
     }
     else # Le produit est déjà en panier, j'ajoute la quantité à celle existante
     {
@@ -127,12 +129,34 @@ function prixTotal()
     {
         foreach ($_SESSION['panier'] as $produit) 
         {
-            $total += $produit['prix'] * $produit['quantite'];
+            $total += $produit['prix'] * $produit['quantite']*1.2;
         }
     }
     
     return $total;
 }
+
+function modifUser($id){
+$result = $pdo->prepare('SELECT * FROM membre WHERE id_membre = :id');
+$result->bindValue(':id',$_GET['modifUser'],PDO::PARAM_INT);
+$result->excute();
+if($result->rowCount() == 1){
+    $user = $result->fetch();
+    if(!isset($_SESSION['target'])){
+            
+        $_SESSION['target'] = array();
+        
+        }
+    foreach ($user as $key => $value) {
+            $_SESSION['target'][$key]= $values;
+    }
+
+    header('location:inscription.php');
+}
+
+    
+}
+
 
 //Fonction inscription/modification utilisateur
 
@@ -372,5 +396,6 @@ function photoVerif($post, $files)
     }
     return $nom_photo;
 }
+
 
 
