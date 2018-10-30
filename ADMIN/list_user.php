@@ -1,6 +1,9 @@
 <?php
 $page = "Liste des utilisateurs";
 require_once("inc/header_back.php");
+if (isset($_GET['modifUser'])){
+    modifUser($_GET['modifUser']);
+}
 
 if(isset($_GET['a']) && isset($_GET['id']) && $_GET['a'] == "delete" && is_numeric($_GET['id'])) # la fonction is_numeric() me permet de vérifier que le paramètre rentré est bien un chiffre
     {
@@ -98,7 +101,7 @@ if(isset($_GET['a']) && isset($_GET['id']) && $_GET['a'] == "delete" && is_numer
         
 
         # code...
-    }
+    
          $contenu .= "<td><a data-toggle='modal' data-target='#deleteModal" . $user['id_membre'] . "'><i class='fas fa-trash-alt'></i></a></td>";
  
          # J'appelle ma modal de supression (fonction créée dans fonction.php)
@@ -114,11 +117,7 @@ if(isset($_GET['a']) && isset($_GET['id']) && $_GET['a'] == "delete" && is_numer
 
 
 <?php require_once("inc/footer_back.php");
-if (isset($_GET['modifUser'])){
-    modifUser($_GET['modifUser']){
 
-    
 
-  
-}
+
 ?>
