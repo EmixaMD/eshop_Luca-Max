@@ -5,6 +5,23 @@
 
     require_once("inc/header_back.php");
 
+    $pdostatement = $pdo->query("SELECT SUM(montant) FROM commande");
+    $pdostatement->execute();
+    $ca = $pdostatement->fetch();
+    $ca_str = "chiffre d'affaire ".round($ca["SUM(montant)"],2)." € <br>";
+
+    $pdostatement = $pdo->query("SELECT COUNT(etat) FROM commande WHERE etat = 'en preparation'");
+    $pdostatement->execute();
+    $commande_prepa = $pdostatement->fetch();
+    $commande_prepa_str = "le nombre de commande en preparation est de ".$commande_prepa["COUNT(etat)"]."<br>";
+
+    $pdostatement = $pdo->query("SELECT m.pseudo FROM membre m , commande c WHERE m.id_membre = c.id_membre GROUP BY c.id_membre ORDER BY c.montant LIMIT 0,1");
+    $pdostatement->execute();
+    $best_client = $pdostatement->fetch();
+    $best_client_str = "notre pigeon preferé ".$best_client["pseudo"]." <br>";
+
+
+
 
     if(isset($_GET['a']) && isset($_GET['id']) && $_GET['a'] == "delete" && is_numeric($_GET['id'])) # la fonction is_numeric() me permet de vérifier que le paramètre rentré est bien un chiffre
     {
@@ -122,6 +139,12 @@
 ?>
 
     <?= $msg ?>
+    
     <?= $contenu ?>
+    <?= $ca_str ?>
+    <?=$commande_prepa_str?>
+    <?=$best_client_str?>
     
     <?php require_once("inc/footer_back.php"); ?>
+
+    

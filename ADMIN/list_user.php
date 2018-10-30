@@ -93,8 +93,12 @@ if(isset($_GET['a']) && isset($_GET['id']) && $_GET['a'] == "delete" && is_numer
              
          }
  
-         $contenu .= "<td><a href='../inscription.php?id=" . $user['id_membre'] . "'><i class='fas fa-pen'></i></a></td>";
- 
+         $contenu .= "<td><a href='?modifUser=" . $user['id_membre'] . "'><i class='fas fa-pen'></i></a></td>";
+
+        
+
+        # code...
+    }
          $contenu .= "<td><a data-toggle='modal' data-target='#deleteModal" . $user['id_membre'] . "'><i class='fas fa-trash-alt'></i></a></td>";
  
          # J'appelle ma modal de supression (fonction créée dans fonction.php)
@@ -109,4 +113,12 @@ if(isset($_GET['a']) && isset($_GET['id']) && $_GET['a'] == "delete" && is_numer
 <?=$contenu?>
 
 
-<?php require_once("inc/footer_back.php"); ?>
+<?php require_once("inc/footer_back.php");
+if (isset($_GET['modifUser'])){
+    modifUser($_GET['modifUser']){
+
+    
+
+  
+}
+?>

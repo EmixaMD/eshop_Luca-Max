@@ -65,7 +65,7 @@ function deleteModal($id, $titre, $reference)
                 echo '</button>';
                 echo '</div>';
                 echo '<div class="modal-body">';
-                echo "Êtes-vous sûr de vouloir supprimer" . $titre . " (référence: " . $reference . " ) ?";
+                echo "Êtes-vous sûr de vouloir supprimer " . $titre . " (référence: " . $reference . " ) ?";
                 echo '</div>';
                 echo '<div class="modal-footer">';
                 echo '<button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>';
@@ -134,4 +134,24 @@ function prixTotal()
     }
     
     return $total;
+}
+function modifUser($id){
+$result = $pdo->prepare('SELECT * FROM membre WHERE id_membre = :id');
+$result->bindValue(':id',$_GET['modifUser'],PDO::PARAM_INT);
+$result->excute();
+if($result->rowCount() == 1){
+    $user = $result->fetch();
+    if(!isset($_SESSION['target'])){
+            
+        $_SESSION['target'] = array();
+        
+        }
+    foreach ($user as $key => $value) {
+            $_SESSION['target'][$key]= $values;
+    }
+
+    header('location:inscription.php');
+}
+
+    
 }
